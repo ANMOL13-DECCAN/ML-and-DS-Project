@@ -12,23 +12,26 @@ from sklearn.ensemble import RandomForestClassifier
 
 @st.cache_data
 def load_and_preprocess_data():
-    """Mocks the loading and initial filtering of the Loksabha data."""
+    """Mocks the loading and initial filtering of the Loksabha data.
+    The mock data size has been increased to fix the ValueError during stratification.
+    """
     
-    # Mock Data Creation (Replace with actual data loading if 'cleaned_loksabha_elections.csv' is available)
+    # Mock Data Creation (Now 14 rows to ensure all top 4 parties have at least 3 samples)
     data = {
-        'year': [2019, 2019, 2019, 2014, 2014, 2019, 2019, 2014, 2019, 2019],
-        'state_name': ['MAHARASHTRA', 'UP', 'BIHAR', 'MAHARASHTRA', 'UP', 'MAHARASHTRA', 'BIHAR', 'UP', 'KARNATAKA', 'TAMIL NADU'],
-        'pc_name': ['Pune', 'Varanasi', 'Patna Sahib', 'Pune', 'Varanasi', 'Nagpur', 'Nalanda', 'Amethi', 'Bangalore South', 'Chennai North'],
-        'pc_type': ['GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN'],
-        'votes': [568000, 674000, 395000, 400000, 500000, 600000, 350000, 450000, 700000, 450000],
-        'margin': [100000, 480000, 55000, 50000, 300000, 350000, 15000, 100000, 200000, 50000],
-        'party': ['BJP', 'BJP', 'JDU', 'INC', 'BJP', 'BJP', 'JDU', 'INC', 'BJP', 'DMK'],
-        'candidate_type': ['MALE', 'MALE', 'MALE', 'MALE', 'MALE', 'MALE', 'MALE', 'FEMALE', 'FEMALE', 'MALE'],
-        'sex': ['M', 'M', 'M', 'M', 'M', 'M', 'M', 'F', 'F', 'M']
+        'year': [2019, 2019, 2019, 2014, 2014, 2019, 2019, 2014, 2019, 2019, 2019, 2014, 2019, 2019],
+        'state_name': ['MAHARASHTRA', 'UP', 'BIHAR', 'MAHARASHTRA', 'UP', 'MAHARASHTRA', 'BIHAR', 'UP', 'KARNATAKA', 'TAMIL NADU', 'TAMIL NADU', 'TAMIL NADU', 'UP', 'BIHAR'],
+        'pc_name': ['Pune', 'Varanasi', 'Patna Sahib', 'Pune', 'Varanasi', 'Nagpur', 'Nalanda', 'Amethi', 'Bangalore South', 'Chennai North', 'Chennai South', 'Madurai', 'Sultanpur', 'Sitamarhi'],
+        'pc_type': ['GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN', 'GEN'],
+        'votes': [568000, 674000, 395000, 400000, 500000, 600000, 350000, 450000, 700000, 450000, 480000, 420000, 490000, 380000],
+        'margin': [100000, 480000, 55000, 50000, 300000, 350000, 15000, 100000, 200000, 50000, 80000, 45000, 110000, 95000],
+        'party': ['BJP', 'BJP', 'JDU', 'INC', 'BJP', 'BJP', 'JDU', 'INC', 'BJP', 'DMK', 'DMK', 'DMK', 'INC', 'JDU'],
+        'candidate_type': ['MALE', 'MALE', 'MALE', 'MALE', 'MALE', 'MALE', 'MALE', 'FEMALE', 'FEMALE', 'MALE', 'MALE', 'FEMALE', 'FEMALE', 'MALE'],
+        'sex': ['M', 'M', 'M', 'M', 'M', 'M', 'M', 'F', 'F', 'M', 'M', 'F', 'F', 'M']
     }
     df = pd.DataFrame(data)
 
     # Filter to only top 10 parties (mocked to just 4 for simplicity)
+    # New counts: BJP: 5, INC: 3, JDU: 3, DMK: 3 (Total: 14) -> Stratification will now work.
     top_parties = df['party'].value_counts().nlargest(4).index.tolist()
     df_filtered = df[df['party'].isin(top_parties)].copy()
 
@@ -135,7 +138,7 @@ def main():
     with st.form("prediction_form"):
         # Get unique values for select boxes from the data (mocked)
         state_options = ['MAHARASHTRA', 'UP', 'BIHAR', 'KARNATAKA', 'TAMIL NADU']
-        pc_options = ['Pune', 'Varanasi', 'Patna Sahib', 'Nagpur', 'Nalanda', 'Amethi', 'Bangalore South', 'Chennai North']
+        pc_options = ['Pune', 'Varanasi', 'Patna Sahib', 'Nagpur', 'Nalanda', 'Amethi', 'Bangalore South', 'Chennai North', 'Chennai South', 'Madurai', 'Sultanpur', 'Sitamarhi']
         
         col1, col2, col3 = st.columns(3)
         
