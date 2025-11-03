@@ -93,18 +93,18 @@ def load_and_preprocess_data():
 
 # Use @st.cache_resource for heavy, non-data-specific objects like models and transformers.
 @st.cache_resource
-def train_model(_preprocessor, X_train, y_train, classifier):
+def train_model(_preprocessor, X_train, y_train, _classifier):
     """
     Trains the ML model pipeline using a preprocessor.
     
-    The leading underscore on '_preprocessor' tells Streamlit NOT to hash the 
-    non-hashable ColumnTransformer object, thereby fixing the error.
+    The leading underscore on '_preprocessor' and '_classifier' tells Streamlit 
+    NOT to hash the non-hashable Scikit-learn objects, thereby fixing the error.
     """
     
     # Inside the function, you must refer to the argument using the underscore
     model_pipeline = Pipeline(steps=[
         ('preprocessor', _preprocessor), 
-        ('classifier', classifier)
+        ('classifier', _classifier)
     ])
     
     # Fit the entire pipeline
@@ -143,7 +143,8 @@ def main():
     # Train the model (Calling the fixed function)
     st.sidebar.info(f"Training {classifier_name} (Cached)...")
     try:
-        model = train_model(preprocessor, X_train, y_train, classifier)
+        # Pass the classifier object, which will be received as _classifier
+        model = train_model(preprocessor, X_train, y_train, classifier) 
         
         # Evaluate performance
         accuracy = model.score(X_test, y_test)
